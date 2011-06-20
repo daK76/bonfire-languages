@@ -5,10 +5,19 @@ function list_languages()
 	$folder = APPPATH .'language/';
 	
 	$ci =& get_instance();
+	
+	$ci->benchmark->mark('dir.map_start');	
+	// if there's no custom config for menu
+	// we'll use dir helper
+
+	
 	$ci->load->helper('directory');
 	
 	$folders = directory_map($folder, 1);
-	
+
+	$ci->benchmark->mark('dir.map_end');
+	$ci->benchmark->elapsed_time('dir.map_start', 'dir.map_end');
+
 	return $folders;
 }
 
@@ -33,16 +42,23 @@ function list_lang_files($language='english')
 	
 	// Module lang files
 	$modules = module_list();
-	
+	$custom_modules = module_list(true);
+
 	foreach ($modules as $module)
 	{
 		$module_langs = module_files($module, 'language');
-		
+
 		if (isset($module_langs[$module]['language'][$language]))
 		{
 			$path = implode('/', array($module, 'language', $language));
-			$files = find_lang_files(APPPATH .'core_modules/'. $path .'/', $language);
 			
+			if (in_array($module, $custom_modules))
+			{
+				$files = find_lang_files(APPPATH .'../modules/'. $path .'/', $language);
+			}
+			else
+				$files = find_lang_files(APPPATH .'core_modules/'. $path .'/', $language);
+
 			foreach ($files as $file)
 			{
 				$lang_files[] = $file;
