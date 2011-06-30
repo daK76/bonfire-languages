@@ -5,18 +5,9 @@ function list_languages()
 	$folder = APPPATH .'language/';
 	
 	$ci =& get_instance();
-	
-	$ci->benchmark->mark('dir.map_start');	
-	// if there's no custom config for menu
-	// we'll use dir helper
-
-	
 	$ci->load->helper('directory');
 	
 	$folders = directory_map($folder, 1);
-
-	$ci->benchmark->mark('dir.map_end');
-	$ci->benchmark->elapsed_time('dir.map_start', 'dir.map_end');
 
 	return $folders;
 }
